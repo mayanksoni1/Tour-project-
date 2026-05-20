@@ -43,7 +43,7 @@ app.get("/destinations", async (req, res) => {
     const destinations = await Destination.find();
     res.json(destinations);
   } catch (err) {
-    console.error(err);
+    console.error("Destinations error:", err);
     res.status(500).json({ message: "Failed to fetch destinations", error: err.message });
   }
 });
@@ -54,7 +54,7 @@ app.post("/destinations", async (req, res) => {
     await destination.save();
     res.json({ message: "Destination added!", data: destination });
   } catch (err) {
-    console.error(err);
+    console.error("Add destination error:", err);
     res.status(400).json({ message: "Failed to add destination", error: err.message });
   }
 });
@@ -64,7 +64,7 @@ app.get("/bookings", async (req, res) => {
     const bookings = await Booking.find();
     res.json(bookings);
   } catch (err) {
-    console.error(err);
+    console.error("Bookings fetch error:", err);
     res.status(500).json({ message: "Failed to fetch bookings", error: err.message });
   }
 });
@@ -75,7 +75,7 @@ app.post("/bookings", async (req, res) => {
     await booking.save();
     res.json({ message: "Booking successful!", data: booking });
   } catch (err) {
-    console.error(err);
+    console.error("Booking error:", err); // <-- will show in Render logs
     res.status(400).json({ message: "Booking failed!", error: err.message });
   }
 });
@@ -92,7 +92,7 @@ app.get("/search", async (req, res) => {
     const results = await Destination.find(filter);
     res.json(results);
   } catch (err) {
-    console.error(err);
+    console.error("Search error:", err);
     res.status(500).json({ message: "Search failed", error: err.message });
   }
 });
