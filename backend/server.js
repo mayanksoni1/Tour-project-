@@ -34,11 +34,45 @@ app.get("/destinations", async (req, res) => {
 });
 
 // ✅ Route to add booking (temporary in-memory)
-let bookings = [];
+/* let bookings = [];
 app.post("/bookings", (req, res) => {
   bookings.push(req.body);
   res.json({ message: "Booking successful!", data: req.body });
+}); */
+
+// ✅ Define Booking Schema
+const bookingSchema = new mongoose.Schema({
+  destination: String,
+  user: String,
+  email: String,
+  phone: String,
+  date: { type: Date, default: Date.now }
 });
+
+const Booking = mongoose.model("Booking", bookingSchema);
+
+// ✅ Route to add a booking (saved in MongoDB)
+app.post("/bookings", async (req, res) => {
+  try {
+    const booking = new Booking(req.body); // create new booking doc
+    await booking.save(); // save to MongoDB
+    res.json({ message: "Booking successful!", data: booking });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Route to get all bookings
+app.get("/bookings", async (req, res) => {
+  try {
+    const bookings = await Booking.find();
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 // ✅ Route to add a destination to MongoDB
 app.post("/destinations", async (req, res) => {
