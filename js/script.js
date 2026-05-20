@@ -99,35 +99,44 @@ Message: ${message}`;
   loadDestinations();
 
   // ---------- Booking form handler ----------
-  const bookingFormElement = document.getElementById("bookingForm");
-  const bookingMessage = document.getElementById("bookingMessage");
+  // ---------- Booking form handler ----------
+const bookingFormElement = document.getElementById("bookingForm");
+const bookingMessage = document.getElementById("bookingMessage");
 
-  if (bookingFormElement) {
-    bookingFormElement.addEventListener("submit", async (e) => {
-      e.preventDefault();
+if (bookingFormElement) {
+  bookingFormElement.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      const bookingData = {
-        destination: document.getElementById("destination").value,
-        user: document.getElementById("user").value,
-        email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value
-      };
+    const bookingData = {
+      destination: document.getElementById("destination").value,
+      user: document.getElementById("user").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value
+    };
 
-      try {
-        const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bookingData)
-        });
+    try {
+      const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingData)
+      });
 
-        const data = await res.json();
-        bookingMessage.innerText = data.message; // shows "Booking successful!"
-      } catch (err) {
-        console.error(err);
-        bookingMessage.innerText = "Booking failed!";
+      const data = await res.json();
+
+      if (res.ok) {
+        bookingMessage.style.color = "green";
+        bookingMessage.innerText = data.message; // "Booking successful!"
+      } else {
+        bookingMessage.style.color = "red";
+        bookingMessage.innerText = `${data.message} – ${data.error || "Unknown error"}`;
       }
-    });
-  }
+    } catch (err) {
+      console.error(err);
+      bookingMessage.style.color = "red";
+      bookingMessage.innerText = "Booking failed! Network or server error.";
+    }
+  });
+}
 
   // ---------- Book Now buttons ----------
   window.bookDestination = async function(name) {
