@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -17,30 +17,16 @@ mongoose.connect(process.env.MAYANKTOUR2, {
     console.error("MongoDB connection error:", err);
   });
 
-// ✅ Define Destination Schema
+// ✅ Destination Schema
 const destinationSchema = new mongoose.Schema({
   name: String,
   location: String,
   type: String,
   budget: String
 });
-
 const Destination = mongoose.model("Destination", destinationSchema);
 
-// ✅ Route to get destinations from MongoDB
-app.get("/destinations", async (req, res) => {
-  const destinations = await Destination.find();
-  res.json(destinations);
-});
-
-// ✅ Route to add booking (temporary in-memory)
-/* let bookings = [];
-app.post("/bookings", (req, res) => {
-  bookings.push(req.body);
-  res.json({ message: "Booking successful!", data: req.body });
-}); */
-
-// ✅ Define Booking Schema
+// ✅ Booking Schema
 const bookingSchema = new mongoose.Schema({
   destination: String,
   user: String,
@@ -48,21 +34,28 @@ const bookingSchema = new mongoose.Schema({
   phone: String,
   date: { type: Date, default: Date.now }
 });
-
 const Booking = mongoose.model("Booking", bookingSchema);
 
-// ✅ Route to add a booking (saved in MongoDB)
-app.post("/bookings", async (req, res) => {
+// ✅ Routes
+app.get("/destinations", async (req, res) => {
   try {
-    const booking = new Booking(req.body); // create new booking doc
-    await booking.save(); // save to MongoDB
-    res.json({ message: "Booking successful!", data: booking });
+    const destinations = await Destination.find();
+    res.json(destinations);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// ✅ Route to get all bookings
+app.post("/destinations", async (req, res) => {
+  try {
+    const destination = new Destination(req.body);
+    await destination.save();
+    res.json({ message: "Destination added!", data: destination });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/bookings", async (req, res) => {
   try {
     const bookings = await Booking.find();
@@ -72,27 +65,21 @@ app.get("/bookings", async (req, res) => {
   }
 });
 
-
-
-// ✅ Route to add a destination to MongoDB
-app.post("/destinations", async (req, res) => {
+app.post("/bookings", async (req, res) => {
   try {
-    const destination = new Destination(req.body); // create new doc from request body
-    await destination.save(); // save to MongoDB
-    res.json({ message: "Destination added!", data: destination });
+    const booking = new Booking(req.body);
+    await booking.save();
+    res.json({ message: "Booking successful!", data: booking });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-
-// ✅ Route to search destinations by query parameters
 app.get("/search", async (req, res) => {
   try {
     const { name, location, type, budget } = req.query;
     const filter = {};
-
-    if (name) filter.name = new RegExp(name, "i");       // case-insensitive match
+    if (name) filter.name = new RegExp(name, "i");
     if (location) filter.location = new RegExp(location, "i");
     if (type) filter.type = new RegExp(type, "i");
     if (budget) filter.budget = new RegExp(budget, "i");
@@ -104,47 +91,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
-
-
-// ✅ Start the server
+// ✅ Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
-
-
-// ---------- Booking Form Handler ----------
-const bookingForm = document.getElementById("bookingForm");
-const bookingMessage = document.getElementById("bookingMessage");
-
-if (bookingForm) {
-  bookingForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const bookingData = {
-      user: document.getElementById("user").value,
-      email: document.getElementById("email").value,
-      phone: document.getElementById("phone").value,
-      destination: document.getElementById("destination").value
-    };
-
-    try {
-      const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookingData)
-      });
-
-      const data = await res.json();
-      bookingMessage.innerHTML = `<p style="color:green;">${data.message}</p>`;
-    } catch (err) {
-      console.error(err);
-      bookingMessage.innerHTML = `<p style="color:red;">Error booking trip.</p>`;
-    }
-  });
-}
-
-
-// mongodb+srv://touruser:1302Travel@tourcluster.raukfge.mongodb.net/?appName=TourCluster      
-
-
-//mongodb://touruser:1302Travel@ac-ce2xpzg-shard-00-00.raukfge.mongodb.net:27017,ac-ce2xpzg-shard-00-01.raukfge.mongodb.net:27017,ac-ce2xpzg-shard-00-02.raukfge.mongodb.net:27017/?ssl=true&replicaSet=atlas-11h8xo-shard-0&authSource=admin&appName=TourCluster
