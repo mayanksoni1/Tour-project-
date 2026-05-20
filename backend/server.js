@@ -111,6 +111,39 @@ app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
+
+// ---------- Booking Form Handler ----------
+const bookingForm = document.getElementById("bookingForm");
+const bookingMessage = document.getElementById("bookingMessage");
+
+if (bookingForm) {
+  bookingForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const bookingData = {
+      user: document.getElementById("user").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      destination: document.getElementById("destination").value
+    };
+
+    try {
+      const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingData)
+      });
+
+      const data = await res.json();
+      bookingMessage.innerHTML = `<p style="color:green;">${data.message}</p>`;
+    } catch (err) {
+      console.error(err);
+      bookingMessage.innerHTML = `<p style="color:red;">Error booking trip.</p>`;
+    }
+  });
+}
+
+
 // mongodb+srv://touruser:1302Travel@tourcluster.raukfge.mongodb.net/?appName=TourCluster      
 
 
