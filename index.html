@@ -18,6 +18,7 @@
             <a href="#home">home</a>
             <a href="#category">Adventures</a>
             <a href="#packages">packages</a>
+            <a href="#booking">booking</a>
             <a href="#contact">contact</a>
         </nav>
         <div class="icons">
@@ -176,17 +177,33 @@
         </div>
 
                 <!-- Booking Section -->
-                <div class="booking-box">
-                  <h2>Book Your Trip</h2>
-                  <form id="bookingForm">
-                    <input type="text" id="user" placeholder="Your Name" required>
-                    <input type="email" id="email" placeholder="Your Email" required>
-                    <input type="text" id="phone" placeholder="Your Phone" required>
-                    <input type="text" id="destination" placeholder="Destination (e.g. Manali, Goa)" required>
-                    <button type="submit" class="btn">Book Now</button>
-                  </form>
-                  <div id="bookingMessage"></div>
-            </div>
+
+                <section class="booking" id="booking">
+                  <div class="wrapper1">
+                    <div class="title1">
+                      <h1>Book Your Trip</h1>
+                    </div>
+
+                    <div class="contact-form">
+                      <form id="bookingForm">
+                         <div class="input-fields">
+                          <input type="text" class="input" placeholder="Your Name" id="user" required>
+                          <input type="email" class="input" placeholder="Email Address" id="email" required>
+                          <input type="text" class="input" placeholder="Phone" id="phone" required>
+                          <input type="text" class="input" placeholder="Destination" id="destination" required>
+                        </div>
+
+                        <div class="msg">
+                          <div class="btn1 handleSubmit">
+                            <button type="submit" class="btn">Book Now</button>
+                          </div>
+                        </div>
+                      </form>
+                      <div id="bookingMessage" style="margin-top:10px; color:green;"></div>
+                    </div>
+                  </div>
+                </section>
+
         
     </section>   <!-- this closes the packages section -->
 
