@@ -100,10 +100,16 @@ Message: ${message}`;
 
   // ---------- Bookings ----------
   window.bookDestination = async function(name) {
+    // ✅ Collect real form input values
+    const user = document.getElementById("user")?.value || "Anonymous";
+    const email = document.getElementById("email")?.value || "noemail@example.com";
+    const phone = document.getElementById("phone")?.value || "";
+
     const bookingData = {
       destination: name,
-      user: "Test User", // replace with form input later
-      email: "test@example.com"
+      user,
+      email,
+      phone
     };
 
     try {
@@ -114,10 +120,10 @@ Message: ${message}`;
       });
 
       const data = await res.json();
-      alert(data.message); // shows "Booking successful!"
+      document.getElementById("bookingMessage").innerText = data.message;
     } catch (err) {
       console.error(err);
-      alert("Error booking destination.");
+      document.getElementById("bookingMessage").innerText = "Error booking destination.";
     }
   };
 
