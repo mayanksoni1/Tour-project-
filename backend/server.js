@@ -6,7 +6,10 @@ const PORT = 3000;
 app.use(express.json());
 
 // ✅ Connect to MongoDB Atlas
-mongoose.connect("mongodb://touruser:1302Travel@ac-ce2xpzg-shard-00-00.raukfge.mongodb.net:27017,ac-ce2xpzg-shard-00-01.raukfge.mongodb.net:27017,ac-ce2xpzg-shard-00-02.raukfge.mongodb.net:27017/?ssl=true&replicaSet=atlas-11h8xo-shard-0&authSource=admin&appName=TourCluster")
+mongoose.connect(process.env.MAYANKTOUR1, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
   .then(() => {
     console.log("MongoDB connected");
   })
