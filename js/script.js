@@ -98,19 +98,44 @@ Message: ${message}`;
   }
   loadDestinations();
 
-  // ---------- Bookings ----------
+  // ---------- Booking form handler ----------
+  const bookingFormElement = document.getElementById("bookingForm");
+  const bookingMessage = document.getElementById("bookingMessage");
+
+  if (bookingFormElement) {
+    bookingFormElement.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const bookingData = {
+        destination: document.getElementById("destination").value,
+        user: document.getElementById("user").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value
+      };
+
+      try {
+        const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingData)
+        });
+
+        const data = await res.json();
+        bookingMessage.innerText = data.message; // shows "Booking successful!"
+      } catch (err) {
+        console.error(err);
+        bookingMessage.innerText = "Booking failed!";
+      }
+    });
+  }
+
+  // ---------- Book Now buttons ----------
   window.bookDestination = async function(name) {
-    // ✅ Collect real form input values
     const user = document.getElementById("user")?.value || "Anonymous";
     const email = document.getElementById("email")?.value || "noemail@example.com";
     const phone = document.getElementById("phone")?.value || "";
 
-    const bookingData = {
-      destination: name,
-      user,
-      email,
-      phone
-    };
+    const bookingData = { destination: name, user, email, phone };
 
     try {
       const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
@@ -120,10 +145,10 @@ Message: ${message}`;
       });
 
       const data = await res.json();
-      document.getElementById("bookingMessage").innerText = data.message;
+      bookingMessage.innerText = data.message;
     } catch (err) {
       console.error(err);
-      document.getElementById("bookingMessage").innerText = "Error booking destination.";
+      bookingMessage.innerText = "Error booking destination.";
     }
   };
 
