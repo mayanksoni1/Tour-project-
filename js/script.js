@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('.header');
   const whatsappButton = document.querySelector('#whatsappButton');
 
+  // ---------- WhatsApp handler ----------
   if (whatsappButton) {
     whatsappButton.addEventListener('click', () => {
       const name = document.querySelector('input[name="name"]').value;
@@ -50,8 +51,7 @@ Message: ${message}`;
       if (budget) params.append("budget", budget);
 
       try {
-        // Use relative path if frontend and backend are same origin.
-        const res = await fetch(`http://localhost:3000/search?${params.toString()}`);
+        const res = await fetch(`https://tour-project-backend-gkru.onrender.com/search?${params.toString()}`);
         if (!res.ok) throw new Error(`Server responded with ${res.status}`);
         const data = await res.json();
 
@@ -62,6 +62,7 @@ Message: ${message}`;
             <div class="result-card">
               <h3>${escapeHtml(d.name)}</h3>
               <p>${escapeHtml(d.location)} — ${escapeHtml(d.type)} — Budget: ${escapeHtml(d.budget)}</p>
+              <button onclick="bookDestination('${escapeHtml(d.name)}')">Book Now</button>
             </div>
           `).join("");
         }
@@ -74,6 +75,53 @@ Message: ${message}`;
     });
   }
 
+  // ---------- Load destinations ----------
+  async function loadDestinations() {
+    try {
+      const res = await fetch("https://tour-project-backend-gkru.onrender.com/destinations");
+      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+      const data = await res.json();
+
+      const destinationContainer = document.getElementById("destinationContainer");
+      if (destinationContainer) {
+        destinationContainer.innerHTML = data.map(d => `
+          <div class="destination-card">
+            <h3>${escapeHtml(d.name)}</h3>
+            <p>${escapeHtml(d.location)} — ${escapeHtml(d.type)} — Budget: ${escapeHtml(d.budget)}</p>
+            <button onclick="bookDestination('${escapeHtml(d.name)}')">Book Now</button>
+          </div>
+        `).join("");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  loadDestinations();
+
+  // ---------- Bookings ----------
+  window.bookDestination = async function(name) {
+    const bookingData = {
+      destination: name,
+      user: "Test User", // replace with form input later
+      email: "test@example.com"
+    };
+
+    try {
+      const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingData)
+      });
+
+      const data = await res.json();
+      alert(data.message); // shows "Booking successful!"
+    } catch (err) {
+      console.error(err);
+      alert("Error booking destination.");
+    }
+  };
+
+  // ---------- Escape HTML ----------
   function escapeHtml(str = "") {
     return String(str)
       .replace(/&/g, "&amp;")
@@ -82,20 +130,17 @@ Message: ${message}`;
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
   }
-  // ---------- End search handler ----------
 
+  // ---------- Navbar & scroll ----------
   if (menuBtn && navbar) {
     menuBtn.addEventListener('click', () => { navbar.classList.add('active'); });
   }
-
   if (navCloseBtn && navbar) {
     navCloseBtn.addEventListener('click', () => { navbar.classList.remove('active'); });
   }
-
   if (searchBtn && searchForm) {
     searchBtn.addEventListener('click', () => { searchForm.classList.add('active'); });
   }
-
   if (closeSearchBtn && searchForm) {
     closeSearchBtn.addEventListener('click', () => { searchForm.classList.remove('active'); });
   }
