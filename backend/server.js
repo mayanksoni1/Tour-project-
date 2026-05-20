@@ -5,11 +5,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// ✅ Connect to MongoDB Atlas
-mongoose.connect(process.env.MAYANKTOUR2, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+// ✅ Connect to MongoDB Atlas (no deprecated options)
+mongoose.connect(process.env.MAYANKTOUR2)
   .then(() => {
     console.log("MongoDB connected");
   })
