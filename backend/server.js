@@ -6,7 +6,7 @@ const PORT = 3000;
 app.use(express.json());
 
 // ✅ Connect to MongoDB Atlas
-mongoose.connect(process.env.MAYANKTOUR1, {
+mongoose.connect(process.env.MAYANKTOUR2, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
