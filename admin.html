@@ -28,6 +28,13 @@
 </head>
 <body>
 
+  <!-- Protect Admin Page -->
+  <script>
+    if (localStorage.getItem("isAdmin") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+
   <!-- Hero Section -->
   <div class="hero">
     <h1>Admin Dashboard</h1>
@@ -78,6 +85,5 @@
     loadBookings();
   </script>
 
-<</body>
+</body>
 </html>
-
