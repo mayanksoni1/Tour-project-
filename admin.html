@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - Tour Project</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .hero {
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') center/cover no-repeat;
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-weight: 700;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    }
+    .card {
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <h1>Admin Dashboard</h1>
+    <p class="lead">Manage all bookings and track your tour project</p>
+  </div>
+
+  <!-- Container -->
+  <div class="container mt-5">
+    <h2 class="mb-4">All Bookings</h2>
+    <div id="bookingCards" class="row g-4">
+      <!-- Booking cards will be injected here -->
+    </div>
+  </div>
+
+  <script>
+    async function loadBookings() {
+      try {
+        const response = await fetch("https://tour-project-backend-gkru.onrender.com/bookings");
+        const bookings = await response.json();
+
+        const bookingCards = document.getElementById("bookingCards");
+        bookingCards.innerHTML = "";
+
+        bookings.forEach(b => {
+          const card = `
+            <div class="col-md-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">${b.destination}</h5>
+                  <p class="card-text">
+                    <strong>User:</strong> ${b.user}<br>
+                    <strong>Email:</strong> ${b.email}<br>
+                    <strong>Phone:</strong> ${b.phone}<br>
+                    <strong>Date:</strong> ${new Date(b.date).toLocaleString()}
+                  </p>
+                  <button class="btn btn-danger btn-sm">Delete</button>
+                </div>
+              </div>
+            </div>
+          `;
+          bookingCards.innerHTML += card;
+        });
+      } catch (err) {
+        console.error("Error loading bookings:", err);
+      }
+    }
+
+    loadBookings();
+  </script>
+
+</body>
+</html>
