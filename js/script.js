@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const phone = document.querySelector('input[name="phone"]').value;
       const subject = document.querySelector('input[name="subject"]').value;
       const message = document.querySelector('textarea[name="message"]').value;
-      const phoneNumber = "918889400248";
+      const phoneNumber = "919407846955";
       const text = `Hello! 👋 I'm ${name}.
 Email: ${email}
 Phone: ${phone}
