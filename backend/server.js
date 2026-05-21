@@ -1,9 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");   // ✅ add this
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+// ✅ Allow requests from your GitHub Pages site
+app.use(cors({
+  origin: "https://mayanksoni1.github.io",  // your frontend domain
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"]
+}));
 
 // ✅ Connect to MongoDB Atlas
 mongoose.connect(process.env.MAYANKTOUR2)
