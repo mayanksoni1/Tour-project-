@@ -1,9 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");   // ✅ add this
+const cors = require("cors");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
 
 // ✅ Allow requests from your GitHub Pages site
@@ -45,6 +47,11 @@ const bookingSchema = new mongoose.Schema({
 });
 const Booking = mongoose.model("Booking", bookingSchema);
 
+// ✅ Root route (for health check)
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully!");
+});
+
 // ✅ Routes
 app.get("/destinations", async (req, res) => {
   try {
@@ -83,7 +90,7 @@ app.post("/bookings", async (req, res) => {
     await booking.save();
     res.json({ message: "Booking successful!", data: booking });
   } catch (err) {
-    console.error("Booking error:", err); // <-- will show in Render logs
+    console.error("Booking error:", err);
     res.status(400).json({ message: "Booking failed!", error: err.message });
   }
 });
