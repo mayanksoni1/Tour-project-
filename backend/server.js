@@ -17,8 +17,12 @@ app.use(cors({
 
 // ✅ Connect to MongoDB Atlas
 mongoose.connect(process.env.MAYANKTOUR2)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB connection error:", err));
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch(err => {
+    console.error("MongoDB connection error:", err);
+  });
 
 // ✅ Destination Schema
 const destinationSchema = new mongoose.Schema({
@@ -33,13 +37,17 @@ const Destination = mongoose.model("Destination", destinationSchema);
 const bookingSchema = new mongoose.Schema({
   destination: { type: String, required: true },
   user: { type: String, required: true },
-  email: { type: String, required: true, match: /.+@.+\..+/ },
+  email: { 
+    type: String, 
+    required: true, 
+    match: /.+@.+\..+/   // ensures proper email format
+  },
   phone: { type: String, required: true },
   date: { type: Date, default: Date.now }
 });
 const Booking = mongoose.model("Booking", bookingSchema);
 
-// ✅ Root route
+// ✅ Root route (for health check)
 app.get("/", (req, res) => {
   res.send("Backend is running successfully!");
 });
@@ -50,6 +58,7 @@ app.get("/destinations", async (req, res) => {
     const destinations = await Destination.find();
     res.json(destinations);
   } catch (err) {
+    console.error("Destinations error:", err);
     res.status(500).json({ message: "Failed to fetch destinations", error: err.message });
   }
 });
@@ -60,6 +69,7 @@ app.post("/destinations", async (req, res) => {
     await destination.save();
     res.json({ message: "Destination added!", data: destination });
   } catch (err) {
+    console.error("Add destination error:", err);
     res.status(400).json({ message: "Failed to add destination", error: err.message });
   }
 });
@@ -69,6 +79,7 @@ app.get("/bookings", async (req, res) => {
     const bookings = await Booking.find();
     res.json(bookings);
   } catch (err) {
+    console.error("Bookings fetch error:", err);
     res.status(500).json({ message: "Failed to fetch bookings", error: err.message });
   }
 });
@@ -79,6 +90,7 @@ app.post("/bookings", async (req, res) => {
     await booking.save();
     res.json({ message: "Booking successful!", data: booking });
   } catch (err) {
+    console.error("Booking error:", err);
     res.status(400).json({ message: "Booking failed!", error: err.message });
   }
 });
@@ -92,6 +104,7 @@ app.delete("/bookings/:id", async (req, res) => {
     }
     res.json({ message: "Booking deleted successfully!" });
   } catch (err) {
+    console.error("Delete booking error:", err);
     res.status(500).json({ message: "Failed to delete booking", error: err.message });
   }
 });
@@ -108,6 +121,7 @@ app.get("/search", async (req, res) => {
     const results = await Destination.find(filter);
     res.json(results);
   } catch (err) {
+    console.error("Search error:", err);
     res.status(500).json({ message: "Search failed", error: err.message });
   }
 });
