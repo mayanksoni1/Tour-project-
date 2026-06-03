@@ -30,8 +30,10 @@
 
   <!-- Protect Admin Page -->
   <script>
-    const token = localStorage.getItem("token");
+    // ✅ Use sessionStorage instead of localStorage
+    const token = sessionStorage.getItem("token");
     if (!token) {
+      // Always redirect to login if no fresh session
       window.location.href = "login.html";
     }
   </script>
@@ -40,6 +42,7 @@
   <div class="hero">
     <h1>Admin Dashboard</h1>
     <p class="lead">Manage all bookings and track your tour project</p>
+    <button onclick="logout()" class="btn btn-light btn-sm">Logout</button>
   </div>
 
   <!-- Container -->
@@ -51,9 +54,19 @@
   <script>
     async function loadBookings() {
       try {
-        const response = await fetch("https://tour-project-backend-gkru.onrender.com/bookings");
-        const bookings = await response.json();
+        const token = sessionStorage.getItem("token");
+        const response = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
+          headers: { "Authorization": "Bearer " + token }
+        });
 
+        if (response.status === 401) {
+          // Token expired or invalid → force login
+          sessionStorage.removeItem("token");
+          window.location.href = "login.html";
+          return;
+        }
+
+        const bookings = await response.json();
         const bookingCards = document.getElementById("bookingCards");
         bookingCards.innerHTML = "";
 
@@ -83,7 +96,7 @@
 
     async function deleteBooking(id) {
       try {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         const response = await fetch(`https://tour-project-backend-gkru.onrender.com/bookings/${id}`, {
           method: "DELETE",
           headers: { "Authorization": "Bearer " + token }
@@ -97,6 +110,11 @@
       } catch (err) {
         console.error("Error deleting booking:", err);
       }
+    }
+
+    function logout() {
+      sessionStorage.removeItem("token");
+      window.location.href = "login.html";
     }
 
     loadBookings();
