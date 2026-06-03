@@ -49,7 +49,8 @@ const ADMIN_PASS = "2003Mayank";
 app.post("/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASS) {
-    const token = jwt.sign({ role: "admin" }, SECRET, { expiresIn: "1h" });
+    // Short expiry forces re-login quickly
+    const token = jwt.sign({ role: "admin" }, SECRET, { expiresIn: "30s" });
     res.json({ token });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
@@ -67,7 +68,7 @@ function verifyAdmin(req, res, next) {
     if (decoded.role !== "admin") return res.status(403).json({ message: "Forbidden" });
     next();
   } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Invalid or expired token" });
   }
 }
 
