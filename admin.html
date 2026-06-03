@@ -30,10 +30,8 @@
 
   <!-- Protect Admin Page -->
   <script>
-    // ✅ Use sessionStorage instead of localStorage
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token"); // keep same storage as before
     if (!token) {
-      // Always redirect to login if no fresh session
       window.location.href = "login.html";
     }
   </script>
@@ -42,6 +40,7 @@
   <div class="hero">
     <h1>Admin Dashboard</h1>
     <p class="lead">Manage all bookings and track your tour project</p>
+    <!-- ✅ Logout button -->
     <button onclick="logout()" class="btn btn-light btn-sm">Logout</button>
   </div>
 
@@ -54,14 +53,13 @@
   <script>
     async function loadBookings() {
       try {
-        const token = sessionStorage.getItem("token");
+        const token = localStorage.getItem("token");
         const response = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
           headers: { "Authorization": "Bearer " + token }
         });
 
         if (response.status === 401) {
-          // Token expired or invalid → force login
-          sessionStorage.removeItem("token");
+          localStorage.removeItem("token");
           window.location.href = "login.html";
           return;
         }
@@ -96,7 +94,7 @@
 
     async function deleteBooking(id) {
       try {
-        const token = sessionStorage.getItem("token");
+        const token = localStorage.getItem("token");
         const response = await fetch(`https://tour-project-backend-gkru.onrender.com/bookings/${id}`, {
           method: "DELETE",
           headers: { "Authorization": "Bearer " + token }
@@ -112,8 +110,9 @@
       }
     }
 
+    // ✅ Logout function
     function logout() {
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
       window.location.href = "login.html";
     }
 
