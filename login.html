@@ -36,8 +36,8 @@
 
         const data = await response.json();
         if (response.ok) {
-          // Save JWT token instead of isAdmin flag
-          localStorage.setItem("token", data.token);
+          // ✅ Save token in sessionStorage (not localStorage)
+          sessionStorage.setItem("token", data.token);
           window.location.href = "admin.html";
         } else {
           document.getElementById("error").textContent = data.message || "Login failed";
