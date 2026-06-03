@@ -1,9 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SECRET = process.env.JWT_SECRET || "mysecretkey";
 
 // Middleware
 app.use(express.json());
@@ -11,18 +13,14 @@ app.use(express.json());
 // ✅ Allow requests from your GitHub Pages site
 app.use(cors({
   origin: "https://mayanksoni1.github.io",  // your frontend domain
-  methods: ["GET", "POST", "DELETE"],       // added DELETE
-  allowedHeaders: ["Content-Type"]
+  methods: ["GET", "POST", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // ✅ Connect to MongoDB Atlas
 mongoose.connect(process.env.MAYANKTOUR2)
-  .then(() => {
-    console.log("MongoDB connected");
-  })
-  .catch(err => {
-    console.error("MongoDB connection error:", err);
-  });
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
 // ✅ Destination Schema
 const destinationSchema = new mongoose.Schema({
@@ -37,28 +35,52 @@ const Destination = mongoose.model("Destination", destinationSchema);
 const bookingSchema = new mongoose.Schema({
   destination: { type: String, required: true },
   user: { type: String, required: true },
-  email: { 
-    type: String, 
-    required: true, 
-    match: /.+@.+\..+/   // ensures proper email format
-  },
+  email: { type: String, required: true, match: /.+@.+\..+/ },
   phone: { type: String, required: true },
   date: { type: Date, default: Date.now }
 });
 const Booking = mongoose.model("Booking", bookingSchema);
 
-// ✅ Root route (for health check)
+// ✅ Admin credentials
+const ADMIN_USER = "Mayank7987";
+const ADMIN_PASS = "2003Mayank";
+
+// ✅ Admin login route
+app.post("/admin/login", (req, res) => {
+  const { username, password } = req.body;
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    const token = jwt.sign({ role: "admin" }, SECRET, { expiresIn: "1h" });
+    res.json({ token });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+
+// ✅ Middleware to protect admin routes
+function verifyAdmin(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: "No token provided" });
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, SECRET);
+    if (decoded.role !== "admin") return res.status(403).json({ message: "Forbidden" });
+    next();
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+}
+
+// ✅ Routes
 app.get("/", (req, res) => {
   res.send("Backend is running successfully!");
 });
 
-// ✅ Routes
 app.get("/destinations", async (req, res) => {
   try {
     const destinations = await Destination.find();
     res.json(destinations);
   } catch (err) {
-    console.error("Destinations error:", err);
     res.status(500).json({ message: "Failed to fetch destinations", error: err.message });
   }
 });
@@ -69,7 +91,6 @@ app.post("/destinations", async (req, res) => {
     await destination.save();
     res.json({ message: "Destination added!", data: destination });
   } catch (err) {
-    console.error("Add destination error:", err);
     res.status(400).json({ message: "Failed to add destination", error: err.message });
   }
 });
@@ -79,7 +100,6 @@ app.get("/bookings", async (req, res) => {
     const bookings = await Booking.find();
     res.json(bookings);
   } catch (err) {
-    console.error("Bookings fetch error:", err);
     res.status(500).json({ message: "Failed to fetch bookings", error: err.message });
   }
 });
@@ -90,13 +110,12 @@ app.post("/bookings", async (req, res) => {
     await booking.save();
     res.json({ message: "Booking successful!", data: booking });
   } catch (err) {
-    console.error("Booking error:", err);
     res.status(400).json({ message: "Booking failed!", error: err.message });
   }
 });
 
-// ✅ DELETE booking route
-app.delete("/bookings/:id", async (req, res) => {
+// ✅ DELETE booking (protected)
+app.delete("/bookings/:id", verifyAdmin, async (req, res) => {
   try {
     const deletedBooking = await Booking.findByIdAndDelete(req.params.id);
     if (!deletedBooking) {
@@ -104,7 +123,6 @@ app.delete("/bookings/:id", async (req, res) => {
     }
     res.json({ message: "Booking deleted successfully!" });
   } catch (err) {
-    console.error("Delete booking error:", err);
     res.status(500).json({ message: "Failed to delete booking", error: err.message });
   }
 });
@@ -121,7 +139,6 @@ app.get("/search", async (req, res) => {
     const results = await Destination.find(filter);
     res.json(results);
   } catch (err) {
-    console.error("Search error:", err);
     res.status(500).json({ message: "Search failed", error: err.message });
   }
 });
