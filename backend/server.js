@@ -45,12 +45,11 @@ const Booking = mongoose.model("Booking", bookingSchema);
 const ADMIN_USER = "Mayank7987";
 const ADMIN_PASS = "2003Mayank";
 
-// ✅ Admin login route
+// ✅ Admin login route (fixed: no short expiry)
 app.post("/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASS) {
-    // Short expiry forces re-login quickly
-    const token = jwt.sign({ role: "admin" }, SECRET, { expiresIn: "30s" });
+    const token = jwt.sign({ role: "admin" }, SECRET); // no 30s expiry
     res.json({ token });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
@@ -147,4 +146,4 @@ app.get("/search", async (req, res) => {
 // ✅ Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
-}); 
+});
