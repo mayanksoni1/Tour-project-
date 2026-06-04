@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const fetch = require("node-fetch"); // ✅ install with: npm install node-fetch
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,6 +49,7 @@ const ADMIN_PASS = "2003Mayank";
 app.post("/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASS) {
+    // Short expiry forces re-login quickly
     const token = jwt.sign({ role: "admin" }, SECRET, { expiresIn: "30s" });
     res.json({ token });
   } else {
@@ -128,36 +128,18 @@ app.delete("/bookings/:id", verifyAdmin, async (req, res) => {
   }
 });
 
-// ✅ Internet-powered search route (Wikipedia + Wikimedia Commons)
 app.get("/search", async (req, res) => {
   try {
-    const { name } = req.query;
-    if (!name) {
-      return res.status(400).json({ message: "Please provide a destination name" });
-    }
+    const { name, location, type, budget } = req.query;
+    const filter = {};
+    if (name) filter.name = new RegExp(name, "i");
+    if (location) filter.location = new RegExp(location, "i");
+    if (type) filter.type = new RegExp(type, "i");
+    if (budget) filter.budget = new RegExp(budget, "i");
 
-    // Wikipedia description
-    const wikiRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`);
-    const wikiData = await wikiRes.json();
-
-    // Wikimedia Commons image
-    const commonsRes = await fetch(
-      `https://commons.wikimedia.org/w/api.php?action=query&prop=pageimages&format=json&titles=${encodeURIComponent(name)}&pithumbsize=400`
-    );
-    const commonsData = await commonsRes.json();
-    const pages = commonsData.query.pages;
-    const firstPage = Object.values(pages)[0];
-    const imageUrl = firstPage?.thumbnail?.source || null;
-
-    const result = {
-      name,
-      description: wikiData.extract || "No description available.",
-      image: imageUrl
-    };
-
-    res.json([result]);
+    const results = await Destination.find(filter);
+    res.json(results);
   } catch (err) {
-    console.error("Search error:", err);
     res.status(500).json({ message: "Search failed", error: err.message });
   }
 });
