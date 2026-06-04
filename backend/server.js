@@ -128,7 +128,7 @@ app.delete("/bookings/:id", verifyAdmin, async (req, res) => {
   }
 });
 
-// ✅ Internet-powered search route
+// ✅ Internet-powered search route (Wikipedia + Wikimedia Commons)
 app.get("/search", async (req, res) => {
   try {
     const { name } = req.query;
@@ -140,16 +140,19 @@ app.get("/search", async (req, res) => {
     const wikiRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`);
     const wikiData = await wikiRes.json();
 
-    // Unsplash image (replace with your Unsplash API key)
-    const unsplashRes = await fetch(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(name)}&client_id=YOUR_UNSPLASH_KEY`
+    // Wikimedia Commons image
+    const commonsRes = await fetch(
+      `https://commons.wikimedia.org/w/api.php?action=query&prop=pageimages&format=json&titles=${encodeURIComponent(name)}&pithumbsize=400`
     );
-    const unsplashData = await unsplashRes.json();
+    const commonsData = await commonsRes.json();
+    const pages = commonsData.query.pages;
+    const firstPage = Object.values(pages)[0];
+    const imageUrl = firstPage?.thumbnail?.source || null;
 
     const result = {
       name,
       description: wikiData.extract || "No description available.",
-      image: unsplashData.results[0]?.urls?.small || null
+      image: imageUrl
     };
 
     res.json([result]);
