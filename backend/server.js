@@ -143,6 +143,40 @@ app.get("/search", async (req, res) => {
   }
 });
 
+// ✅ Smart Search Route (Wikipedia + Unsplash)
+const axios = require("axios"); // install with: npm install axios
+
+app.get("/smart-search", async (req, res) => {
+  try {
+    const query = req.query.q; // user search term
+    if (!query) return res.status(400).json({ message: "No search query provided" });
+
+    // --- Wikipedia API ---
+    const wikiRes = await axios.get(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`
+    );
+    const description = wikiRes.data.extract || "No description available";
+
+    // --- Unsplash API ---
+    const unsplashRes = await axios.get("https://api.unsplash.com/search/photos", {
+      params: { query, per_page: 1 },
+      headers: { Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}` }
+    });
+    const imageUrl =
+      unsplashRes.data.results[0]?.urls?.regular || "https://via.placeholder.com/400";
+
+    // ✅ Return combined result
+    res.json({
+      name: query,
+      description,
+      image: imageUrl
+    });
+  } catch (err) {
+    console.error("Smart search error:", err.message);
+    res.status(500).json({ message: "Smart search failed", error: err.message });
+  }
+});
+
 // ✅ Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
