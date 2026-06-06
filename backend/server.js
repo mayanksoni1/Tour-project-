@@ -145,11 +145,13 @@ app.get("/search", async (req, res) => {
   }
 });
 
-// ✅ Smart Search Route (Wikipedia + Wikimedia Commons)
+// ✅ Smart Search Route (Wikipedia summary + Wikimedia REST media)
 app.get("/smart-search", async (req, res) => {
   try {
     const query = req.query.q;
-    if (!query) return res.status(400).json({ message: "No search query provided" });
+    if (!query) {
+      return res.status(400).json({ message: "No search query provided" });
+    }
 
     // Wikipedia summary
     const wikiRes = await axios.get(
@@ -157,22 +159,13 @@ app.get("/smart-search", async (req, res) => {
     );
     const description = wikiRes.data.extract || "No description available";
 
-    // Wikimedia Commons image
-    const commonsRes = await axios.get("https://commons.wikimedia.org/w/api.php", {
-      params: {
-        action: "query",
-        format: "json",
-        formatversion: 2,
-        prop: "pageimages",
-        piprop: "original",
-        titles: query,
-        origin: "*"   // ✅ critical to avoid 403
-      }
-    });
-
-    const pages = commonsRes.data.query?.pages;
-    const firstPage = pages && pages.length > 0 ? pages[0] : null;
-    const imageUrl = firstPage?.original?.source || "https://via.placeholder.com/400";
+    // Wikimedia REST media API for images
+    const imageRes = await axios.get(
+      `https://en.wikipedia.org/api/rest_v1/page/media/${encodeURIComponent(query)}`
+    );
+    const items = imageRes.data.items || [];
+    const firstImage = items.find(item => item.type === "image");
+    const imageUrl = firstImage?.srcset?.[0]?.src || "https://via.placeholder.com/400";
 
     res.json({
       name: query,
@@ -184,7 +177,6 @@ app.get("/smart-search", async (req, res) => {
     res.status(500).json({ message: "Smart search failed", error: err.message });
   }
 });
-
 
 // ✅ Start server
 app.listen(PORT, () => {
