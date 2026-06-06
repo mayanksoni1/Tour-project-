@@ -20,9 +20,10 @@ html {
 
 section {
   padding: 5rem 9%;
-  margin: 0 auto;       /* centers each section horizontally */
-  
+  width: 100%;       /* full width */
+  margin: 0;         /* no auto centering box */
 }
+
 
 .btn {
   margin-top: 1rem;
