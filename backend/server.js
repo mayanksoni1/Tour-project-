@@ -157,23 +157,21 @@ app.get("/smart-search", async (req, res) => {
     );
     const description = wikiRes.data.extract || "No description available";
 
-    // Wikimedia Commons image (add origin=* to avoid CORS/403 issues)
-    const commonsRes = await axios.get(
-      "https://commons.wikimedia.org/w/api.php",
-      {
-        params: {
-          action: "query",
-          format: "json",
-          prop: "pageimages",
-          piprop: "original",
-          titles: query,
-          origin: "*"   // ✅ important fix
-        }
+    // Wikimedia Commons image (force JSON response with origin=* and utf8)
+    const commonsRes = await axios.get("https://commons.wikimedia.org/w/api.php", {
+      params: {
+        action: "query",
+        format: "json",
+        formatversion: 2,
+        prop: "pageimages",
+        piprop: "original",
+        titles: query,
+        origin: "*"
       }
-    );
+    });
 
     const pages = commonsRes.data.query?.pages;
-    const firstPage = pages ? Object.values(pages)[0] : null;
+    const firstPage = pages && pages.length > 0 ? pages[0] : null;
     const imageUrl = firstPage?.original?.source || "https://via.placeholder.com/400";
 
     res.json({
@@ -186,6 +184,7 @@ app.get("/smart-search", async (req, res) => {
     res.status(500).json({ message: "Smart search failed", error: err.message });
   }
 });
+
 
 // ✅ Start server
 app.listen(PORT, () => {
