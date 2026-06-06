@@ -160,7 +160,7 @@ app.get("/smart-search", async (req, res) => {
     // --- Unsplash API ---
     const unsplashRes = await axios.get("https://api.unsplash.com/search/photos", {
       params: { query, per_page: 1 },
-      headers: { Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}` }
+      headers: { Authorization: `Client-ID ${process.env.UNSPLASH_MyTour}` }
     });
     const imageUrl =
       unsplashRes.data.results[0]?.urls?.regular || "https://via.placeholder.com/400";
