@@ -77,16 +77,17 @@ Message: ${message}`;
   bookingMessage.style.display = "block";
 
   try {
-    const res = await fetch("/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user: document.getElementById("user").value,
-        email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value,
-        destination: document.getElementById("destination").value
-      })
-    });
+    const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    user: document.getElementById("user").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    destination: document.getElementById("destination").value
+  })
+});
+
 
     if (res.ok) {
       bookingMessage.className = "success";
