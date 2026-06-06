@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchForm = document.querySelector('.search-form');
   const menuBtn = document.querySelector('#menu-btn');
   const navCloseBtn = document.querySelector('#nav-close');
-  const searchBtn = document.querySelector('#search-btn');
-  const closeSearchBtn = document.querySelector('#close-search');
+  const searchBtn = document.querySelector('#search-btn');   // search icon in header
+  const closeSearchBtn = document.querySelector('#close-search'); // close icon in search form
   const header = document.querySelector('.header');
   const whatsappButton = document.querySelector('#whatsappButton');
 
@@ -117,8 +117,8 @@ Message: ${message}`;
       destinationInput.value = name;
     }
 
-    // Scroll to booking section
-    const bookingSection = document.getElementById("bookingSection");
+    // Scroll to booking section (anchor #booking)
+    const bookingSection = document.querySelector("#booking");
     if (bookingSection) {
       bookingSection.scrollIntoView({ behavior: "smooth" });
     }
@@ -134,7 +134,7 @@ Message: ${message}`;
       .replace(/'/g, "&#039;");
   }
 
-  // ---------- Navbar & scroll ----------
+  // ---------- Navbar & search icon toggle ----------
   if (menuBtn && navbar) {
     menuBtn.addEventListener('click', () => { navbar.classList.add('active'); });
   }
@@ -148,6 +148,7 @@ Message: ${message}`;
     closeSearchBtn.addEventListener('click', () => { searchForm.classList.remove('active'); });
   }
 
+  // ---------- Scroll behavior ----------
   let scrollTimeout;
   window.addEventListener('scroll', () => {
     clearTimeout(scrollTimeout);
@@ -163,4 +164,7 @@ Message: ${message}`;
 
   if (window.scrollY > 0) {
     if (header) header.classList.add('active');
-  } else
+  } else {
+    if (header) header.classList.remove('active');
+  }
+});
