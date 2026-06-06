@@ -70,45 +70,47 @@ Message: ${message}`;
   }
 
   // ---------- Booking form handler ----------
-  const bookingFormElement = document.getElementById("bookingForm");
+
+    document.getElementById("bookingForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
   const bookingMessage = document.getElementById("bookingMessage");
+  bookingMessage.style.display = "block";
 
-  if (bookingFormElement) {
-    bookingFormElement.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const bookingData = {
-        destination: document.getElementById("destination").value,
+  try {
+    const res = await fetch("/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         user: document.getElementById("user").value,
         email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value
-      };
-
-      try {
-        const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bookingData)
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-          bookingMessage.style.color = "green";
-          bookingMessage.innerText = data.message;
-          bookingFormElement.reset();
-        } else {
-          bookingMessage.style.color = "red";
-          bookingMessage.innerText = `${data.message} – ${data.error || "Unknown error"}`;
-        }
-      } catch (err) {
-        console.error(err);
-        bookingMessage.style.color = "red";
-        bookingMessage.innerText = "Booking failed! Network or server error.";
-      }
+        phone: document.getElementById("phone").value,
+        destination: document.getElementById("destination").value
+      })
     });
-  }
 
+    if (res.ok) {
+      bookingMessage.className = "success";
+      bookingMessage.innerHTML = `
+        <span class="headline">Booking Request Received</span>
+        Thank you! Your request has been submitted. We’ll reach out shortly to finalize details and confirm after payment verification.
+      `;
+    } else {
+      bookingMessage.className = "error";
+      bookingMessage.innerHTML = `
+        <span class="headline">Error</span>
+        Something went wrong. Please try again.
+      `;
+    }
+  } catch (err) {
+    bookingMessage.className = "error";
+    bookingMessage.innerHTML = `
+      <span class="headline">Network Error</span>
+      Please try again later.
+    `;
+  }
+});
+
+  
   // ---------- Book Now buttons ----------
   window.bookDestination = function(name) {
   // Prefill the booking form destination field
