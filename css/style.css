@@ -592,4 +592,19 @@ form label:hover {
 .result-card button:hover {
   background: #1e7e34;
 }
+/* Map container styling */
+.map-box {
+  max-width: 800px;       /* limit width */
+  margin: 40px auto;      /* center horizontally */
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+#map {
+  height: 400px;          /* fixed height */
+  width: 100%;            /* fill the box */
+}
+
 
