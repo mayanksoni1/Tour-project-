@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="css/style.css">
     <!-- Iconscout Link  -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+    <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 </head>
 <body>
@@ -271,6 +276,41 @@
         <div class="credit">created by <span>Mayank soni & Namrata Punasiya</span> | all rights reserved!</div>
     </section>
     <!-- footer section ends -->
+    <script>
+  // Create map centered on India
+  const map = L.map('map').setView([20.5937, 78.9629], 5);
+
+  // Add OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Example destinations
+  const destinations = [
+    { name: "Goa", coords: [15.2993, 74.1240] },
+    { name: "Indore", coords: [22.7196, 75.8577] }
+  ];
+
+  destinations.forEach(dest => {
+    const marker = L.marker(dest.coords).addTo(map);
+    marker.on('mouseover', async () => {
+      const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(dest.name)}`);
+      const data = await res.json();
+      const desc = data.extract || "No description available";
+      const img = data.thumbnail?.source || "https://via.placeholder.com/200";
+
+      marker.bindPopup(`
+        <div style="max-width:200px">
+          <img src="${img}" style="width:100%; border-radius:6px;">
+          <h4>${dest.name}</h4>
+          <p>${desc}</p>
+        </div>
+      `).openPopup();
+    });
+  });
+</script>
+
+    
     <script src="js/script.js"></script>
 </body>
 </html>
