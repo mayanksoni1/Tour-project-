@@ -290,49 +290,44 @@
 
         // Throttle to avoid too many API calls
     let lastCall = 0;
-    map.on('mousemove', async function(e) {
-     const now = Date.now();
-     if (now - lastCall < 800) return; // only fetch every 800ms
-     lastCall = now;
+    map.on('click', async function(e) {
+  const lat = e.latlng.lat;
+  const lng = e.latlng.lng;
 
-     const lat = e.latlng.lat;
-     const lng = e.latlng.lng;
+  try {
+    const res = await fetch(
+      `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=10000&gslimit=1&format=json&origin=*`
+    );
+    const data = await res.json();
 
-     try {
-       // Wikipedia GeoSearch API: find nearest place
-       const res = await fetch(
-     `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=10000&gslimit=1&format=json&origin=*`
-       );
-       const data = await res.json();
+    if (data.query.geosearch.length > 0) {
+      const place = data.query.geosearch[0].title;
 
-     if (data.query.geosearch.length > 0) {
-        const place = data.query.geosearch[0].title;
+      const summaryRes = await fetch(
+        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(place)}`
+      );
+      const summaryData = await summaryRes.json();
 
-             // Fetch summary + image
-         const summaryRes = await fetch(
-           `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(place)}`
-         );
-         const summaryData = await summaryRes.json();
+      const desc = summaryData.extract || "No description available";
+      const img = summaryData.thumbnail?.source || "https://via.placeholder.com/200";
 
-         const desc = summaryData.extract || "No description available";
-         const img = summaryData.thumbnail?.source || "https://via.placeholder.com/200";
+      popup
+        .setLatLng(e.latlng)
+        .setContent(`
+          <div style="max-width:200px">
+            <img src="${img}" style="width:100%; border-radius:6px;">
+            <h4>${place}</h4>
+            <p>${desc}</p>
+            <button onclick="bookDestination('${place}')">Book Now</button>
+          </div>
+        `)
+        .openOn(map);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+});
 
-         popup
-           .setLatLng(e.latlng)
-           .setContent(`
-             <div style="max-width:200px">
-               <img src="${img}" style="width:100%; border-radius:6px;">
-               <h4>${place}</h4>
-               <p>${desc}</p>
-               <button onclick="bookDestination('${place}')">Book Now</button>
-             </div>
-           `)
-           .openOn(map);
-       }
-     } catch (err) {
-          console.error(err);
-     }
-    });
     </script>
 
     <script src="js/script.js"></script>
