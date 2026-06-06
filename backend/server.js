@@ -145,7 +145,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
-// ✅ Smart Search Route (Wikipedia summary + Wikimedia REST media)
+// ✅ Smart Search Route (Wikipedia summary + REST media)
 app.get("/smart-search", async (req, res) => {
   try {
     const query = req.query.q;
@@ -159,7 +159,7 @@ app.get("/smart-search", async (req, res) => {
     );
     const description = wikiRes.data.extract || "No description available";
 
-    // Wikimedia REST media API for images
+    // Wikipedia REST media API for images
     const imageRes = await axios.get(
       `https://en.wikipedia.org/api/rest_v1/page/media/${encodeURIComponent(query)}`
     );
