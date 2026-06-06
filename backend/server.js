@@ -145,7 +145,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
-// ✅ Smart Search Route (Wikipedia summary + REST media)
+// ✅ Smart Search Route (Wikipedia summary + REST media with User-Agent)
 app.get("/smart-search", async (req, res) => {
   try {
     const query = req.query.q;
@@ -153,15 +153,21 @@ app.get("/smart-search", async (req, res) => {
       return res.status(400).json({ message: "No search query provided" });
     }
 
+    const headers = {
+      "User-Agent": "MyTourApp/1.0 (https://mayanksoni1.github.io)"
+    };
+
     // Wikipedia summary
     const wikiRes = await axios.get(
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`,
+      { headers }
     );
     const description = wikiRes.data.extract || "No description available";
 
     // Wikipedia REST media API for images
     const imageRes = await axios.get(
-      `https://en.wikipedia.org/api/rest_v1/page/media/${encodeURIComponent(query)}`
+      `https://en.wikipedia.org/api/rest_v1/page/media/${encodeURIComponent(query)}`,
+      { headers }
     );
     const items = imageRes.data.items || [];
     const firstImage = items.find(item => item.type === "image");
