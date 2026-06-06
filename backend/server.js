@@ -145,7 +145,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
-// ✅ Smart Search Route (Wikipedia summary + REST media with User-Agent)
+// ✅ Smart Search Route (Wikipedia summary + fallback image)
 app.get("/smart-search", async (req, res) => {
   try {
     const query = req.query.q;
@@ -164,14 +164,8 @@ app.get("/smart-search", async (req, res) => {
     );
     const description = wikiRes.data.extract || "No description available";
 
-    // Wikipedia REST media API for images
-    const imageRes = await axios.get(
-      `https://en.wikipedia.org/api/rest_v1/page/media/${encodeURIComponent(query)}`,
-      { headers }
-    );
-    const items = imageRes.data.items || [];
-    const firstImage = items.find(item => item.type === "image");
-    const imageUrl = firstImage?.srcset?.[0]?.src || "https://via.placeholder.com/400";
+    // Use thumbnail from summary if available
+    const imageUrl = wikiRes.data.thumbnail?.source || "https://via.placeholder.com/400";
 
     res.json({
       name: query,
@@ -183,6 +177,7 @@ app.get("/smart-search", async (req, res) => {
     res.status(500).json({ message: "Smart search failed", error: err.message });
   }
 });
+
 
 // ✅ Start server
 app.listen(PORT, () => {
