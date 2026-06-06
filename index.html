@@ -191,9 +191,8 @@
 
 
         
-                <!-- Booking Section -->
-
-                <section class="booking" id="booking">
+              <!-- Booking Section -->
+<section class="booking" id="booking">
   <div class="booking-form">
     <h1>Book Your Trip ✈️</h1>
     <form id="bookingForm">
@@ -204,14 +203,12 @@
           <input type="text" class="input" placeholder="📞 Phone Number" id="phone" required>
         </div>
         <div class="right-fields">
-          <select class="input" id="destination" required>
-            <option value="" disabled selected>📍 Select Destination</option>
-            <option>Manali</option>
-            <option>Goa</option>
-            <option>Delhi</option>
-            <option>Jaipur</option>
-            <option>Kerala</option>
-            <option>Darjeeling</option>
+          <input type="text" class="input" placeholder="📍 Destination" id="destination" required>
+          <select class="input" id="budget" required>
+            <option value="" disabled selected>💰 Select Budget</option>
+            <option value="economy">Economy</option>
+            <option value="standard">Standard</option>
+            <option value="premium">Premium</option>
           </select>
           <button type="submit" class="btn">Book Now</button>
         </div>
@@ -220,6 +217,7 @@
     <div id="bookingMessage"></div>
   </div>
 </section>
+
 
 
     
