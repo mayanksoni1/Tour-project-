@@ -277,36 +277,63 @@
     </section>
     <!-- footer section ends -->
     <script>
-  // Create map centered on India
-  const map = L.map('map').setView([20.5937, 78.9629], 5);
+
+        <script>
+  // Initialize map centered on Indore
+  const map = L.map('map').setView([22.7196, 75.8577], 12);
 
   // Add OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
-  // Example destinations
-  const destinations = [
-    { name: "Goa", coords: [15.2993, 74.1240] },
-    { name: "Indore", coords: [22.7196, 75.8577] }
-  ];
+  // Popup that follows cursor
+  const popup = L.popup();
 
-  destinations.forEach(dest => {
-    const marker = L.marker(dest.coords).addTo(map);
-    marker.on('mouseover', async () => {
-      const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(dest.name)}`);
+  // Throttle to avoid too many API calls
+  let lastCall = 0;
+  map.on('mousemove', async function(e) {
+    const now = Date.now();
+    if (now - lastCall < 800) return; // only fetch every 800ms
+    lastCall = now;
+
+    const lat = e.latlng.lat;
+    const lng = e.latlng.lng;
+
+    try {
+      // Wikipedia GeoSearch API: find nearest place
+      const res = await fetch(
+        `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=10000&gslimit=1&format=json&origin=*`
+      );
       const data = await res.json();
-      const desc = data.extract || "No description available";
-      const img = data.thumbnail?.source || "https://via.placeholder.com/200";
 
-      marker.bindPopup(`
-        <div style="max-width:200px">
-          <img src="${img}" style="width:100%; border-radius:6px;">
-          <h4>${dest.name}</h4>
-          <p>${desc}</p>
-        </div>
-      `).openPopup();
-    });
+      if (data.query.geosearch.length > 0) {
+        const place = data.query.geosearch[0].title;
+
+        // Fetch summary + image
+        const summaryRes = await fetch(
+          `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(place)}`
+        );
+        const summaryData = await summaryRes.json();
+
+        const desc = summaryData.extract || "No description available";
+        const img = summaryData.thumbnail?.source || "https://via.placeholder.com/200";
+
+        popup
+          .setLatLng(e.latlng)
+          .setContent(`
+            <div style="max-width:200px">
+              <img src="${img}" style="width:100%; border-radius:6px;">
+              <h4>${place}</h4>
+              <p>${desc}</p>
+              <button onclick="bookDestination('${place}')">Book Now</button>
+            </div>
+          `)
+          .openOn(map);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   });
 </script>
 
