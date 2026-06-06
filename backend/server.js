@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const axios = require("axios"); // install with: npm install axios
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -45,7 +46,7 @@ const Booking = mongoose.model("Booking", bookingSchema);
 const ADMIN_USER = "Mayank7987";
 const ADMIN_PASS = "2003Mayank";
 
-// ✅ Admin login route (fixed)
+// ✅ Admin login route
 app.post("/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASS) {
@@ -144,11 +145,9 @@ app.get("/search", async (req, res) => {
 });
 
 // ✅ Smart Search Route (Wikipedia + Unsplash)
-const axios = require("axios"); // install with: npm install axios
-
 app.get("/smart-search", async (req, res) => {
   try {
-    const query = req.query.q; // user search term
+    const query = req.query.q;
     if (!query) return res.status(400).json({ message: "No search query provided" });
 
     // --- Wikipedia API ---
@@ -165,7 +164,6 @@ app.get("/smart-search", async (req, res) => {
     const imageUrl =
       unsplashRes.data.results[0]?.urls?.regular || "https://via.placeholder.com/400";
 
-    // ✅ Return combined result
     res.json({
       name: query,
       description,
