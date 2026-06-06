@@ -527,3 +527,69 @@ form label:hover {
     padding: 10px;
   }
 }
+
+/* Search Results Container */
+#searchResults {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Individual Result Card */
+.result-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: 320px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* Image Styling */
+.result-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* Text Content */
+.result-card h3 {
+  margin: 12px;
+  font-size: 20px;
+  color: #333;
+}
+
+.result-card p {
+  margin: 0 12px 12px;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* Book Now Button */
+.result-card button {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 0 auto 12px;
+  padding: 10px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.result-card button:hover {
+  background: #1e7e34;
+}
+
