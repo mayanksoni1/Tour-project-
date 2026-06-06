@@ -39,7 +39,6 @@ Message: ${message}`;
       if (searchLoader) searchLoader.style.display = "block";
       if (searchResults) searchResults.innerHTML = "";
 
-      // Only use the destination name field for smart search
       const query = document.getElementById("name")?.value.trim() || "";
 
       try {
@@ -97,6 +96,7 @@ Message: ${message}`;
         if (res.ok) {
           bookingMessage.style.color = "green";
           bookingMessage.innerText = data.message;
+          bookingFormElement.reset();
         } else {
           bookingMessage.style.color = "red";
           bookingMessage.innerText = `${data.message} – ${data.error || "Unknown error"}`;
@@ -110,25 +110,17 @@ Message: ${message}`;
   }
 
   // ---------- Book Now buttons ----------
-  window.bookDestination = async function(name) {
-    const user = document.getElementById("user")?.value || "Anonymous";
-    const email = document.getElementById("email")?.value || "noemail@example.com";
-    const phone = document.getElementById("phone")?.value || "";
+  window.bookDestination = function(name) {
+    // Prefill the booking form destination field
+    const destinationInput = document.getElementById("destination");
+    if (destinationInput) {
+      destinationInput.value = name;
+    }
 
-    const bookingData = { destination: name, user, email, phone };
-
-    try {
-      const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookingData)
-      });
-
-      const data = await res.json();
-      bookingMessage.innerText = data.message;
-    } catch (err) {
-      console.error(err);
-      bookingMessage.innerText = "Error booking destination.";
+    // Scroll to booking section
+    const bookingSection = document.getElementById("bookingSection");
+    if (bookingSection) {
+      bookingSection.scrollIntoView({ behavior: "smooth" });
     }
   };
 
