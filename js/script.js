@@ -111,18 +111,25 @@ Message: ${message}`;
 
   // ---------- Book Now buttons ----------
   window.bookDestination = function(name) {
-    // Prefill the booking form destination field
-    const destinationInput = document.getElementById("destination");
-    if (destinationInput) {
-      destinationInput.value = name;
-    }
+  // Prefill the booking form destination field
+  const destinationInput = document.getElementById("destination");
+  if (destinationInput) {
+    destinationInput.value = name;
+  }
 
-    // Scroll to booking section (anchor #booking)
-    const bookingSection = document.querySelector("#booking");
-    if (bookingSection) {
-      bookingSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  // Scroll to booking section
+  const bookingSection = document.querySelector("#booking");
+  if (bookingSection) {
+    bookingSection.scrollIntoView({ behavior: "smooth" });
+  }
+
+  // Close the search form if it’s open
+  const searchForm = document.querySelector(".search-form");
+  if (searchForm) {
+    searchForm.classList.remove("active");
+  }
+};
+
 
   // ---------- Escape HTML ----------
   function escapeHtml(str = "") {
