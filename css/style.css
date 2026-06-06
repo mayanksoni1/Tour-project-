@@ -594,8 +594,8 @@ form label:hover {
 }
 /* Map container styling */
 .map-box {
-  max-width: 800px;       /* limit width */
-  margin: 40px auto;      /* center horizontally */
+  max-width: 1200px;   /* wider box */
+  margin: 40px auto;
   border: 2px solid #ccc;
   border-radius: 10px;
   overflow: hidden;
@@ -603,8 +603,8 @@ form label:hover {
 }
 
 #map {
-  height: 400px;          /* fixed height */
-  width: 100%;            /* fill the box */
+  height: 600px;       /* taller map */
+  width: 100%;
 }
 
 
