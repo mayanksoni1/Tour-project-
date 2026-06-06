@@ -128,6 +128,7 @@ app.delete("/bookings/:id", verifyAdmin, async (req, res) => {
   }
 });
 
+// ✅ Database search route
 app.get("/search", async (req, res) => {
   try {
     const { name, location, type, budget } = req.query;
@@ -144,50 +145,19 @@ app.get("/search", async (req, res) => {
   }
 });
 
-/* // ✅ Smart Search Route (Wikipedia + Unsplash)
+// ✅ Smart Search Route (Wikipedia + Wikimedia Commons)
 app.get("/smart-search", async (req, res) => {
   try {
     const query = req.query.q;
     if (!query) return res.status(400).json({ message: "No search query provided" });
 
-    // --- Wikipedia API ---
+    // Wikipedia summary
     const wikiRes = await axios.get(
       `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`
     );
     const description = wikiRes.data.extract || "No description available";
 
-    // --- Unsplash API ---
-    const unsplashRes = await axios.get("https://api.unsplash.com/search/photos", {
-      params: { query, per_page: 1 },
-      headers: { Authorization: `Client-ID ${process.env.UNSPLASH_MyTour}` }
-    });
-    const imageUrl =
-      unsplashRes.data.results[0]?.urls?.regular || "https://via.placeholder.com/400";
-
-    res.json({
-      name: query,
-      description,
-      image: imageUrl
-    });
-  } catch (err) {
-    console.error("Smart search error:", err.message);
-    res.status(500).json({ message: "Smart search failed", error: err.message });
-  }
-});    */
-
-// --- Smart Search Route (Wikipedia + Wikimedia Commons) ---
-app.get("/smart-search", async (req, res) => {
-  try {
-    const query = req.query.q;
-    if (!query) return res.status(400).json({ message: "No search query provided" });
-
-    // --- Wikipedia API ---
-    const wikiRes = await axios.get(
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`
-    );
-    const description = wikiRes.data.extract || "No description available";
-
-    // --- Wikimedia Commons API ---
+    // Wikimedia Commons image
     const commonsRes = await axios.get(
       `https://commons.wikimedia.org/w/api.php`,
       {
@@ -200,7 +170,6 @@ app.get("/smart-search", async (req, res) => {
         }
       }
     );
-
     const pages = commonsRes.data.query?.pages;
     const firstPage = pages ? Object.values(pages)[0] : null;
     const imageUrl = firstPage?.original?.source || "https://via.placeholder.com/400";
@@ -215,7 +184,6 @@ app.get("/smart-search", async (req, res) => {
     res.status(500).json({ message: "Smart search failed", error: err.message });
   }
 });
-
 
 // ✅ Start server
 app.listen(PORT, () => {
