@@ -157,7 +157,7 @@ app.get("/smart-search", async (req, res) => {
     );
     const description = wikiRes.data.extract || "No description available";
 
-    // Wikimedia Commons image (force JSON response with origin=* and utf8)
+    // Wikimedia Commons image
     const commonsRes = await axios.get("https://commons.wikimedia.org/w/api.php", {
       params: {
         action: "query",
@@ -166,7 +166,7 @@ app.get("/smart-search", async (req, res) => {
         prop: "pageimages",
         piprop: "original",
         titles: query,
-        origin: "*"
+        origin: "*"   // ✅ critical to avoid 403
       }
     });
 
