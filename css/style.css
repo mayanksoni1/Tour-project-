@@ -607,4 +607,87 @@ form label:hover {
   width: 100%;
 }
 
+/* Booking page */
+
+.booking-form {
+  max-width: 800px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  padding: 30px;
+}
+
+.booking-form h1 {
+  text-align: center;
+  color: #28a745;
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+}
+
+.form-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.left-fields, .right-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1.6rem;
+}
+
+.btn {
+  margin-top: 10px;
+  padding: 14px;
+  background: linear-gradient(90deg, #28a745, #218838);
+  color: #fff;
+  border: none;
+  border-radius: 40px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  background: #1e7e34;
+}
+
+#bookingMessage {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1.6rem;
+  text-align: center;
+  display: none;
+}
+
+#bookingMessage.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+#bookingMessage.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+#bookingMessage .headline {
+  display: block;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
 
