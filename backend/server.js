@@ -157,19 +157,21 @@ app.get("/smart-search", async (req, res) => {
     );
     const description = wikiRes.data.extract || "No description available";
 
-    // Wikimedia Commons image
+    // Wikimedia Commons image (add origin=* to avoid CORS/403 issues)
     const commonsRes = await axios.get(
-      `https://commons.wikimedia.org/w/api.php`,
+      "https://commons.wikimedia.org/w/api.php",
       {
         params: {
           action: "query",
           format: "json",
           prop: "pageimages",
           piprop: "original",
-          titles: query
+          titles: query,
+          origin: "*"   // ✅ important fix
         }
       }
     );
+
     const pages = commonsRes.data.query?.pages;
     const firstPage = pages ? Object.values(pages)[0] : null;
     const imageUrl = firstPage?.original?.source || "https://via.placeholder.com/400";
