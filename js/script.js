@@ -29,109 +29,85 @@ Message: ${message}`;
   }
 
   // ---------- Smart Search form handler ----------
-const searchFormElement = document.getElementById("searchForm");
-const searchLoader = document.getElementById("searchLoader");
-const searchResults = document.getElementById("searchResults");
+  const searchFormElement = document.getElementById("searchForm");
+  const searchLoader = document.getElementById("searchLoader");
+  const searchResults = document.getElementById("searchResults");
 
-if (searchFormElement) {
-  searchFormElement.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (searchLoader) searchLoader.style.display = "block";
-    if (searchResults) searchResults.innerHTML = "";
+  if (searchFormElement) {
+    searchFormElement.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (searchLoader) searchLoader.style.display = "block";
+      if (searchResults) searchResults.innerHTML = "";
 
-    const query = document.getElementById("name")?.value.trim() || "";
+      // Only use the destination name field for smart search
+      const query = document.getElementById("name")?.value.trim() || "";
 
-    try {
-      const res = await fetch(
-        `https://tour-project-backend-gkru.onrender.com/smart-search?q=${encodeURIComponent(query)}`
-      );
-      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-      const data = await res.json();
+      try {
+        const res = await fetch(
+          `https://tour-project-backend-gkru.onrender.com/smart-search?q=${encodeURIComponent(query)}`
+        );
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+        const data = await res.json();
 
-      if (!data || !data.name) {
-        searchResults.innerHTML = "<p>No results found.</p>";
-      } else {
-        searchResults.innerHTML = `
-          <div class="result-card">
-            <img src="${data.image}" alt="${data.name}" style="width:100%; height:200px; object-fit:cover; border-radius:8px;">
-            <h3>${escapeHtml(data.name)}</h3>
-            <p>${escapeHtml(data.description)}</p>
-            <button onclick="bookDestination('${escapeHtml(data.name)}')">Book Now</button>
-          </div>
-        `;
+        if (!data || !data.name) {
+          searchResults.innerHTML = "<p>No results found.</p>";
+        } else {
+          searchResults.innerHTML = `
+            <div class="result-card">
+              <img src="${data.image}" alt="${data.name}" style="width:100%; height:200px; object-fit:cover; border-radius:8px;">
+              <h3>${escapeHtml(data.name)}</h3>
+              <p>${escapeHtml(data.description)}</p>
+              <button onclick="bookDestination('${escapeHtml(data.name)}')">Book Now</button>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error(err);
+        searchResults.innerHTML = "<p>Error fetching results. Is the backend running?</p>";
+      } finally {
+        if (searchLoader) searchLoader.style.display = "none";
       }
-    } catch (err) {
-      console.error(err);
-      searchResults.innerHTML = "<p>Error fetching results. Is the backend running?</p>";
-    } finally {
-      if (searchLoader) searchLoader.style.display = "none";
-    }
-  });
-}
-
-
-  // ---------- Load destinations ----------
-  async function loadDestinations() {
-    try {
-      const res = await fetch("https://tour-project-backend-gkru.onrender.com/destinations");
-      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-      const data = await res.json();
-
-      const destinationContainer = document.getElementById("destinationContainer");
-      if (destinationContainer) {
-        destinationContainer.innerHTML = data.map(d => `
-          <div class="destination-card">
-            <h3>${escapeHtml(d.name)}</h3>
-            <p>${escapeHtml(d.location)} — ${escapeHtml(d.type)} — Budget: ${escapeHtml(d.budget)}</p>
-            <button onclick="bookDestination('${escapeHtml(d.name)}')">Book Now</button>
-          </div>
-        `).join("");
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    });
   }
-  loadDestinations();
 
   // ---------- Booking form handler ----------
-  // ---------- Booking form handler ----------
-const bookingFormElement = document.getElementById("bookingForm");
-const bookingMessage = document.getElementById("bookingMessage");
+  const bookingFormElement = document.getElementById("bookingForm");
+  const bookingMessage = document.getElementById("bookingMessage");
 
-if (bookingFormElement) {
-  bookingFormElement.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  if (bookingFormElement) {
+    bookingFormElement.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const bookingData = {
-      destination: document.getElementById("destination").value,
-      user: document.getElementById("user").value,
-      email: document.getElementById("email").value,
-      phone: document.getElementById("phone").value
-    };
+      const bookingData = {
+        destination: document.getElementById("destination").value,
+        user: document.getElementById("user").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value
+      };
 
-    try {
-      const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookingData)
-      });
+      try {
+        const res = await fetch("https://tour-project-backend-gkru.onrender.com/bookings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingData)
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (res.ok) {
-        bookingMessage.style.color = "green";
-        bookingMessage.innerText = data.message; // "Booking successful!"
-      } else {
+        if (res.ok) {
+          bookingMessage.style.color = "green";
+          bookingMessage.innerText = data.message;
+        } else {
+          bookingMessage.style.color = "red";
+          bookingMessage.innerText = `${data.message} – ${data.error || "Unknown error"}`;
+        }
+      } catch (err) {
+        console.error(err);
         bookingMessage.style.color = "red";
-        bookingMessage.innerText = `${data.message} – ${data.error || "Unknown error"}`;
+        bookingMessage.innerText = "Booking failed! Network or server error.";
       }
-    } catch (err) {
-      console.error(err);
-      bookingMessage.style.color = "red";
-      bookingMessage.innerText = "Booking failed! Network or server error.";
-    }
-  });
-}
+    });
+  }
 
   // ---------- Book Now buttons ----------
   window.bookDestination = async function(name) {
