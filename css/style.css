@@ -20,7 +20,10 @@ html {
 
 section {
   padding: 5rem 9%;
+  margin: 0 auto;       /* centers each section horizontally */
+  max-width: 1200px;    /* keeps content in a neat centered box */
 }
+
 .btn {
   margin-top: 1rem;
   display: inline-block;
