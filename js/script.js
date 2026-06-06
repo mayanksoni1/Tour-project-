@@ -56,7 +56,7 @@ Message: ${message}`;
               <img src="${data.image}" alt="${data.name}" style="width:100%; height:200px; object-fit:cover; border-radius:8px;">
               <h3>${escapeHtml(data.name)}</h3>
               <p>${escapeHtml(data.description)}</p>
-              <button onclick="bookDestination('${escapeHtml(data.name)}')">Book Now</button>
+              <button type="button" onclick="bookDestination('${escapeHtml(data.name)}')">Book Now</button>
             </div>
           `;
         }
@@ -163,7 +163,4 @@ Message: ${message}`;
 
   if (window.scrollY > 0) {
     if (header) header.classList.add('active');
-  } else {
-    if (header) header.classList.remove('active');
-  }
-});
+  } else
