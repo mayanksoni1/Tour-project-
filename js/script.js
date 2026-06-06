@@ -28,52 +28,47 @@ Message: ${message}`;
     });
   }
 
-  // ---------- Search form handler ----------
-  const searchFormElement = document.getElementById("searchForm");
-  const searchLoader = document.getElementById("searchLoader");
-  const searchResults = document.getElementById("searchResults");
+  // ---------- Smart Search form handler ----------
+const searchFormElement = document.getElementById("searchForm");
+const searchLoader = document.getElementById("searchLoader");
+const searchResults = document.getElementById("searchResults");
 
-  if (searchFormElement) {
-    searchFormElement.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (searchLoader) searchLoader.style.display = "block";
-      if (searchResults) searchResults.innerHTML = "";
+if (searchFormElement) {
+  searchFormElement.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (searchLoader) searchLoader.style.display = "block";
+    if (searchResults) searchResults.innerHTML = "";
 
-      const name = document.getElementById("name")?.value.trim() || "";
-      const location = document.getElementById("location")?.value.trim() || "";
-      const type = document.getElementById("type")?.value.trim() || "";
-      const budget = document.getElementById("budget")?.value.trim() || "";
+    const query = document.getElementById("name")?.value.trim() || "";
 
-      const params = new URLSearchParams();
-      if (name) params.append("name", name);
-      if (location) params.append("location", location);
-      if (type) params.append("type", type);
-      if (budget) params.append("budget", budget);
+    try {
+      const res = await fetch(
+        `https://tour-project-backend-gkru.onrender.com/smart-search?q=${encodeURIComponent(query)}`
+      );
+      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+      const data = await res.json();
 
-      try {
-        const res = await fetch(`https://tour-project-backend-gkru.onrender.com/search?${params.toString()}`);
-        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-        const data = await res.json();
-
-        if (!Array.isArray(data) || data.length === 0) {
-          searchResults.innerHTML = "<p>No results found.</p>";
-        } else {
-          searchResults.innerHTML = data.map(d => `
-            <div class="result-card">
-              <h3>${escapeHtml(d.name)}</h3>
-              <p>${escapeHtml(d.location)} — ${escapeHtml(d.type)} — Budget: ${escapeHtml(d.budget)}</p>
-              <button onclick="bookDestination('${escapeHtml(d.name)}')">Book Now</button>
-            </div>
-          `).join("");
-        }
-      } catch (err) {
-        console.error(err);
-        searchResults.innerHTML = "<p>Error fetching results. Is the backend running?</p>";
-      } finally {
-        if (searchLoader) searchLoader.style.display = "none";
+      if (!data || !data.name) {
+        searchResults.innerHTML = "<p>No results found.</p>";
+      } else {
+        searchResults.innerHTML = `
+          <div class="result-card">
+            <img src="${data.image}" alt="${data.name}" style="width:100%; height:200px; object-fit:cover; border-radius:8px;">
+            <h3>${escapeHtml(data.name)}</h3>
+            <p>${escapeHtml(data.description)}</p>
+            <button onclick="bookDestination('${escapeHtml(data.name)}')">Book Now</button>
+          </div>
+        `;
       }
-    });
-  }
+    } catch (err) {
+      console.error(err);
+      searchResults.innerHTML = "<p>Error fetching results. Is the backend running?</p>";
+    } finally {
+      if (searchLoader) searchLoader.style.display = "none";
+    }
+  });
+}
+
 
   // ---------- Load destinations ----------
   async function loadDestinations() {
