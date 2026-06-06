@@ -194,30 +194,35 @@
                 <!-- Booking Section -->
 
                 <section class="booking" id="booking">
-                  <div class="wrapper1">
-                    <div class="title1">
-                      <h1>Book Your Trip</h1>
-                    </div>
+  <div class="booking-form">
+    <h1>Book Your Trip ✈️</h1>
+    <form id="bookingForm">
+      <div class="form-grid">
+        <div class="left-fields">
+          <input type="text" class="input" placeholder="Your Name" id="user" required>
+          <input type="email" class="input" placeholder="Email Address" id="email" 
+                 required pattern="^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$">
+          <input type="text" class="input" placeholder="Phone Number" id="phone" 
+                 required pattern="[0-9]{10}">
+        </div>
+        <div class="right-fields">
+          <select class="input" id="destination" required>
+            <option value="" disabled selected>Select Destination</option>
+            <option>Manali</option>
+            <option>Goa</option>
+            <option>Delhi</option>
+            <option>Jaipur</option>
+            <option>Kerala</option>
+            <option>Darjeeling</option>
+          </select>
+          <button type="submit" class="btn">Book Now</button>
+        </div>
+      </div>
+    </form>
+    <div id="bookingMessage"></div>
+  </div>
+</section>
 
-                    <div class="contact-form">
-                      <form id="bookingForm">
-                         <div class="input-fields">
-                          <input type="text" class="input" placeholder="Your Name" id="user" required>
-                          <input type="email" class="input" placeholder="Email Address" id="email" required>
-                          <input type="text" class="input" placeholder="Phone" id="phone" required>
-                          <input type="text" class="input" placeholder="Destination" id="destination" required>
-                        </div>
-
-                        <div class="msg">
-                          <div class="btn1 handleSubmit">
-                            <button type="submit" class="btn">Book Now</button>
-                          </div>
-                        </div>
-                      </form>
-                      <div id="bookingMessage" style="margin-top:10px; color:green;"></div>
-                    </div>
-                  </div>
-                </section>
     
     <section class="contact" id="contact">
     
