@@ -640,8 +640,11 @@ form label:hover {
   flex-direction: column;
 }
 
+
 .input {
-  width: 100%;
+  width: 100%;                /* fill inside the booking-form */
+  max-width: 100%;            /* prevent overflow */
+  box-sizing: border-box;     /* include padding + border in width */
   padding: 10px 14px;
   margin: 8px 0;
   border: 1px solid #ccc;
@@ -650,6 +653,7 @@ form label:hover {
   color: #333;
   background: #f9f9f9;
 }
+
 
 .input::placeholder {
   color: #888;
