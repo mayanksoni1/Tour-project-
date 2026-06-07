@@ -642,9 +642,7 @@ form label:hover {
 
 
 .input {
-  width: 100%;                /* fill inside the booking-form */
-  max-width: 100%;            /* prevent overflow */
-  box-sizing: border-box;     /* include padding + border in width */
+  width: 100%;
   padding: 10px 14px;
   margin: 8px 0;
   border: 1px solid #ccc;
