@@ -76,25 +76,42 @@
                 <img src="images/category-1.jpg" alt="BungeeJumpingImg">
                 <h3>bungee jump</h3>
                 <p>Bungee jumping is an activity that involves a person jumping from a great height while connected to a large elastic cord.</p>
-                <a href="https://en.wikipedia.org/wiki/Bungee_jumping" class="btn">read more</a>
+                <button class="btn" onclick="showAdventure('Bungee Jumping')">Read More</button>
             </div>
     
             <div class="box">
                 <img src="images/category-2.jpg" alt="ZipLinesImg">
                 <h3>zip lines</h3>
                 <p>A zip-line, zip line, zip-wire, or flying fox is a pulley suspended on a cable, usually made of stainless steel, mounted on a slope.</p>
-                <a href="https://en.wikipedia.org/wiki/Zip_line" class="btn">read more</a>
+                <button class="btn" onclick="showAdventure('Zip Line')">Read More</button>
             </div>
     
             <div class="box">
                 <img src="images/category-3.jpg" alt="canoeingImg">
                 <h3>Canoeing</h3>
                 <p>Canoeing is an activity which involves paddling a canoe with a single-bladed paddle.</p>
-                <a href="https://en.wikipedia.org/wiki/Canoeing" class="btn">read more</a>
+                <button class="btn" onclick="showAdventure('Canoeing')">Read More</button>
             </div>
     
         </div>
-    
+        
+             <div class="modal fade" id="adventureModal" tabindex="-1">
+                 <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                         <h5 id="adventureTitle" class="modal-title">Adventure Details</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                <p id="adventureDesc"></p>
+                              <div id="adventureImages" class="d-flex flex-wrap justify-content-center"></div>
+                            <hr>
+                        <div id="relatedButtons" class="text-center mt-3"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
     </section>
     <section class="packages" id="packages">
 
@@ -334,5 +351,53 @@
     </script>
 
     <script src="js/script.js"></script>
+
+    <script>
+function showAdventure(adventure) {
+  let details = {
+    "Bungee Jumping": {
+      desc: "Feel the adrenaline rush as you leap from towering heights with only a cord keeping you safe.",
+      images: ["images/bungee1.jpg", "images/bungee2.jpg", "images/bungee3.jpg"],
+      related: ["Zip Line", "Canoeing"]
+    },
+    "Zip Line": {
+      desc: "Glide across valleys and forests on thrilling zip lines, enjoying speed and scenic views.",
+      images: ["images/zip1.jpg", "images/zip2.jpg", "images/zip3.jpg"],
+      related: ["Bungee Jumping", "Canoeing"]
+    },
+    "Canoeing": {
+      desc: "Paddle through calm waters or rapid streams, exploring nature at your own pace.",
+      images: ["images/canoe1.jpg", "images/canoe2.jpg", "images/canoe3.jpg"],
+      related: ["Bungee Jumping", "Zip Line"]
+    }
+  };
+
+  const info = details[adventure];
+  if (info) {
+    // Title + description
+    document.getElementById("adventureTitle").textContent = adventure;
+    document.getElementById("adventureDesc").textContent = info.desc;
+
+    // Images
+    const imgContainer = document.getElementById("adventureImages");
+    imgContainer.innerHTML = "";
+    info.images.forEach(img => {
+      imgContainer.innerHTML += `<img src="${img}" class="img-fluid m-2" style="max-width:30%">`;
+    });
+
+    // Related buttons
+    const relatedContainer = document.getElementById("relatedButtons");
+    relatedContainer.innerHTML = "";
+    info.related.forEach(r => {
+      relatedContainer.innerHTML += `<button class="btn btn-outline-primary m-1" onclick="showAdventure('${r}')">Explore ${r}</button>`;
+    });
+
+    // Show modal
+    new bootstrap.Modal(document.getElementById("adventureModal")).show();
+  }
+}
+</script>
+
+    
   </body>
 </html>
